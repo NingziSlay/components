@@ -18,12 +18,12 @@ import (
 //
 // MapConfig 允许字段值为空
 func MapConfig(dest interface{}) error {
-	return newMapper(false).Parse(dest)
+	return newMapper(false).mapper(dest)
 }
 
 // MustMapConfig 所有可导出字段都不允许为空
 func MustMapConfig(dest interface{}) error {
-	return newMapper(true).Parse(dest)
+	return newMapper(true).mapper(dest)
 }
 
 type mapper struct {
@@ -38,8 +38,8 @@ func newMapper(strict bool) *mapper {
 
 type Config struct{}
 var config *Config (config 是一个空指针）
-m.Parse(config) 传的是这个指针的值，也就是一个 nil，无法操作
-m.parse(&config) 传的是这个指向 *config 的指针，通过 reflect 可以设置这个指针指向的 *config 的值
+m.mapper(config) 传的是这个指针的值，也就是一个 nil，无法操作
+m.mapStruct(&config) 传的是这个指向 *config 的指针，通过 reflect 可以设置这个指针指向的 *config 的值
 
                  检查入参
                     |  \
@@ -62,7 +62,7 @@ m.parse(&config) 传的是这个指向 *config 的指针，通过 reflect 可以
     |           /
      ----------
 */
-func (m *mapper) Parse(dest interface{}) error {
+func (m *mapper) mapper(dest interface{}) error {
 	v := reflect.ValueOf(dest)
 	if v.Kind() != reflect.Ptr {
 		return ErrorNonPointer
@@ -74,7 +74,7 @@ func (m *mapper) Parse(dest interface{}) error {
 	if v.Kind() != reflect.Struct {
 		return ErrorNonStruct
 	}
-	return m.parse(v)
+	return m.mapStruct(v)
 }
 
 // behind 返回 v 指针指向的最终值，如果 v 本身就是一个指针，就直接返回 v 自身
@@ -90,8 +90,8 @@ func behind(v reflect.Value) reflect.Value {
 	return behind(reflect.Indirect(v))
 }
 
-// parse 结构体内的字段处理
-func (m *mapper) parse(v reflect.Value) error {
+// mapStruct 结构体内的字段处理
+func (m *mapper) mapStruct(v reflect.Value) error {
 	t := v.Type()
 	for i := 0; i < v.NumField(); i++ {
 		ft := t.Field(i)
@@ -112,6 +112,7 @@ func (m *mapper) parse(v reflect.Value) error {
 				continue
 			}
 		}
+		// set value
 		if err := m.setFieldValue(fv, data.val); err != nil {
 			return err
 		}
@@ -319,7 +320,7 @@ func (m *mapper) setPtr(v reflect.Value, value string) error {
 
 // setStruct 设置 struct 类型
 func (m *mapper) setStruct(v reflect.Value) error {
-	return m.parse(v)
+	return m.mapStruct(v)
 }
 
 const tagName = "env"

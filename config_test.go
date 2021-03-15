@@ -1,7 +1,6 @@
 package pkg
 
 import (
-	"encoding/json"
 	"math"
 	"os"
 	"reflect"
@@ -9,32 +8,28 @@ import (
 	"testing"
 )
 
-func toString(s interface{}) string {
-	b, _ := json.MarshalIndent(s, "", "  ")
-	return string(b)
-}
 
 func TestMapper_Parse(t *testing.T) {
 	type sample struct{}
 	var s sample
 	// non pointer
 	m := newMapper(true)
-	if err := m.Parse(s); err == nil {
+	if err := m.mapper(s); err == nil {
 		t.Fatalf("expect error returned")
 	}
 	// nil
 	var s1 *sample
-	if err := m.Parse(s1); err == nil {
+	if err := m.mapper(s1); err == nil {
 		t.Fatalf("expect error returned")
 	}
 	// non struct
 	var s2 string
-	if err := m.Parse(&s2); err == nil {
+	if err := m.mapper(&s2); err == nil {
 		t.Fatalf("expect error returned")
 	}
 
 	// no error
-	if err := m.Parse(&s); err != nil {
+	if err := m.mapper(&s); err != nil {
 		t.Fatalf("expect no error, got: %s", err)
 	}
 }

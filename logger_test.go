@@ -9,22 +9,22 @@ import (
 func TestInitLogger(t *testing.T) {
 	InitLogger(true)
 
-	if &log == nil {
-		t.Fatalf("log should have been initialized")
+	if &l == nil {
+		t.Fatalf("l should have been initialized")
 	}
 
-	if log.GetLevel() != zerolog.DebugLevel {
-		t.Fatalf("log's level should be Debug")
+	if l.GetLevel() != zerolog.DebugLevel {
+		t.Fatalf("l's level should be Debug")
 	}
 
 	InitLogger(false)
 
-	if &log == nil {
-		t.Fatalf("log should have been initialized")
+	if &l == nil {
+		t.Fatalf("l should have been initialized")
 	}
 
-	if log.GetLevel() != zerolog.InfoLevel {
-		t.Fatalf("log's level should be Info")
+	if l.GetLevel() != zerolog.InfoLevel {
+		t.Fatalf("l's level should be Info")
 	}
 }
 
@@ -39,11 +39,11 @@ func TestGetLogger(t *testing.T) {
 func TestWithLoggerLevel(t *testing.T) {
 	log := WithLoggerLevel(zerolog.TraceLevel)
 	if log.GetLevel() != zerolog.TraceLevel {
-		t.Fatalf("log level should be Trace")
+		t.Fatalf("l level should be Trace")
 	}
 
 	log = WithLoggerLevel(zerolog.FatalLevel)
 	if log.GetLevel() != zerolog.FatalLevel {
-		t.Fatalf("log level should be Fatal")
+		t.Fatalf("l level should be Fatal")
 	}
 }

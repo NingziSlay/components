@@ -29,7 +29,7 @@ func wrapE(msg string, err error) ConfigError {
 
 // 预定义的一些异常
 var (
-	ErrorNonPointer = newE("parse of non-pointer")
-	ErrorNilInput   = newE("parse of nil")
-	ErrorNonStruct  = newE("parse of non-struct ptr")
+	ErrorNonPointer = newE("mapStruct of non-pointer")
+	ErrorNilInput   = newE("mapStruct of nil")
+	ErrorNonStruct  = newE("mapStruct of non-struct ptr")
 )

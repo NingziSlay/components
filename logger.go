@@ -10,9 +10,9 @@ import (
 	"github.com/rs/zerolog"
 )
 
-var log zerolog.Logger
+var l zerolog.Logger
 
-// InitLogger 创建 log 实例
+// InitLogger 创建 l 实例
 func InitLogger(debug bool) {
 	var (
 		level            = zerolog.InfoLevel
@@ -33,24 +33,44 @@ func InitLogger(debug bool) {
 		})
 	}
 	zerolog.TimeFieldFormat = time.RFC3339
-	//zerolog.SetGlobalLevel(level)
-	log = zerolog.New(output).With().Caller().Timestamp().Logger().Level(level)
+	l = zerolog.New(output).With().Caller().Timestamp().Logger().Level(level)
 }
 
-// GetLogger 获取 log 实例，如果 log 为空，则初始化一个 log 实例
+// GetLogger 获取 l 实例，如果 l 为空，则初始化一个 l 实例
 func GetLogger() zerolog.Logger {
-	if &log != nil {
-		return log
+	if &l != nil {
+		return l
 	}
 	InitLogger(false)
-	return log
+	return l
 }
 
-// WithLoggerLevel 返回一个自定义日志等级的 log 实例
+// WithLoggerLevel 返回一个自定义日志等级的 l 实例
 func WithLoggerLevel(level zerolog.Level) zerolog.Logger {
-	if &log != nil {
-		return log.Level(level)
+	if &l != nil {
+		return l.Level(level)
 	}
 	InitLogger(false)
-	return log.Level(level)
+	return l.Level(level)
+}
+
+// WithSampleLog 返回一个 sampling log 实例
+// debug 等级每秒输出前 5 条日志，之后每 20 条输出一条
+// info 等级每秒输出前 5 条日志，之后每 10 条输出一条
+func WithSampleLog() zerolog.Logger {
+	if &l == nil {
+		InitLogger(false)
+	}
+	return l.Sample(zerolog.LevelSampler{
+		DebugSampler: &zerolog.BurstSampler{
+			Burst:       5,
+			Period:      time.Second * 1,
+			NextSampler: &zerolog.BasicSampler{N: 20},
+		},
+		InfoSampler: &zerolog.BurstSampler{
+			Burst:       5,
+			Period:      time.Second * 1,
+			NextSampler: &zerolog.BasicSampler{N: 10},
+		},
+	})
 }
