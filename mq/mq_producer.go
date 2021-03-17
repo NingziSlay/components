@@ -5,11 +5,16 @@ import (
 	"github.com/streadway/amqp"
 )
 
+type RabbitMqProducer interface {
+	Destroy()
+	Publish(interface{}) error
+}
+
 type Producer struct {
 	*mq
 }
 
-func NewMqProducer(config *Config) *Producer {
+func NewMqProducer(config *Config) RabbitMqProducer {
 	return &Producer{
 		newMq(config),
 	}

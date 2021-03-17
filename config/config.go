@@ -1,7 +1,6 @@
 package config
 
 import (
-	"github.com/NingziSlay/pkg"
 	"os"
 	"reflect"
 	"strconv"
@@ -66,14 +65,14 @@ m.mapStruct(&config) 传的是这个指向 *config 的指针，通过 reflect �
 func (m *mapper) mapper(dest interface{}) error {
 	v := reflect.ValueOf(dest)
 	if v.Kind() != reflect.Ptr {
-		return pkg.ErrorNonPointer
+		return ErrorNonPointer
 	}
 	if v.IsNil() {
-		return pkg.ErrorNilInput
+		return ErrorNilInput
 	}
 	v = behind(v)
 	if v.Kind() != reflect.Struct {
-		return pkg.ErrorNonStruct
+		return ErrorNonStruct
 	}
 	return m.mapStruct(v)
 }
@@ -108,7 +107,7 @@ func (m *mapper) mapStruct(v reflect.Value) error {
 		if !data.isValid() {
 			if behind(fv).Kind() != reflect.Struct {
 				if m.strict {
-					return pkg.newE("missing value of %s.%s", t.String(), ft.Name)
+					return newE("missing value of %s.%s", t.String(), ft.Name)
 				}
 				continue
 			}
@@ -127,7 +126,7 @@ func (m *mapper) mapStruct(v reflect.Value) error {
 func (m *mapper) setFieldValue(v reflect.Value, value string) error {
 	switch v.Kind() {
 	default:
-		return pkg.newE("unsupported type: %s", v.String())
+		return newE("unsupported type: %s", v.String())
 	case reflect.String:
 		v.SetString(value)
 	case reflect.Int8:
@@ -177,7 +176,7 @@ func (m *mapper) setFieldValue(v reflect.Value, value string) error {
 func (m *mapper) setInt8(v reflect.Value, value string) error {
 	i, err := strconv.ParseInt(value, 10, 8)
 	if err != nil {
-		return pkg.wrapE("setInt8", err)
+		return wrapE("setInt8", err)
 	}
 	v.SetInt(i)
 	return nil
@@ -187,7 +186,7 @@ func (m *mapper) setInt8(v reflect.Value, value string) error {
 func (m *mapper) setInt16(v reflect.Value, value string) error {
 	i, err := strconv.ParseInt(value, 10, 16)
 	if err != nil {
-		return pkg.wrapE("setInt16", err)
+		return wrapE("setInt16", err)
 	}
 	v.SetInt(i)
 	return nil
@@ -197,7 +196,7 @@ func (m *mapper) setInt16(v reflect.Value, value string) error {
 func (m *mapper) setInt32(v reflect.Value, value string) error {
 	i, err := strconv.ParseInt(value, 10, 32)
 	if err != nil {
-		return pkg.wrapE("setInt32", err)
+		return wrapE("setInt32", err)
 	}
 	v.SetInt(i)
 	return nil
@@ -207,7 +206,7 @@ func (m *mapper) setInt32(v reflect.Value, value string) error {
 func (m *mapper) setInt64(v reflect.Value, value string) error {
 	i, err := strconv.ParseInt(value, 10, 64)
 	if err != nil {
-		return pkg.wrapE("setInt64", err)
+		return wrapE("setInt64", err)
 	}
 	v.SetInt(i)
 	return nil
@@ -217,7 +216,7 @@ func (m *mapper) setInt64(v reflect.Value, value string) error {
 func (m *mapper) setUint8(v reflect.Value, value string) error {
 	i, err := strconv.ParseUint(value, 10, 8)
 	if err != nil {
-		return pkg.wrapE("setUint8", err)
+		return wrapE("setUint8", err)
 	}
 	v.SetUint(i)
 	return nil
@@ -227,7 +226,7 @@ func (m *mapper) setUint8(v reflect.Value, value string) error {
 func (m *mapper) setUint16(v reflect.Value, value string) error {
 	i, err := strconv.ParseUint(value, 10, 16)
 	if err != nil {
-		return pkg.wrapE("setUint16", err)
+		return wrapE("setUint16", err)
 	}
 	v.SetUint(i)
 	return nil
@@ -237,7 +236,7 @@ func (m *mapper) setUint16(v reflect.Value, value string) error {
 func (m *mapper) setUint32(v reflect.Value, value string) error {
 	i, err := strconv.ParseUint(value, 10, 32)
 	if err != nil {
-		return pkg.wrapE("setUint32", err)
+		return wrapE("setUint32", err)
 	}
 	v.SetUint(i)
 	return nil
@@ -247,7 +246,7 @@ func (m *mapper) setUint32(v reflect.Value, value string) error {
 func (m *mapper) setUint64(v reflect.Value, value string) error {
 	i, err := strconv.ParseUint(value, 10, 64)
 	if err != nil {
-		return pkg.wrapE("setUint64", err)
+		return wrapE("setUint64", err)
 	}
 	v.SetUint(i)
 	return nil
@@ -257,7 +256,7 @@ func (m *mapper) setUint64(v reflect.Value, value string) error {
 func (m *mapper) setFloat32(v reflect.Value, value string) error {
 	i, err := strconv.ParseFloat(value, 32)
 	if err != nil {
-		return pkg.wrapE("setFloat32", err)
+		return wrapE("setFloat32", err)
 	}
 	v.SetFloat(i)
 	return nil
@@ -267,7 +266,7 @@ func (m *mapper) setFloat32(v reflect.Value, value string) error {
 func (m *mapper) setFloat64(v reflect.Value, value string) error {
 	i, err := strconv.ParseFloat(value, 64)
 	if err != nil {
-		return pkg.wrapE("setFloat64", err)
+		return wrapE("setFloat64", err)
 	}
 	v.SetFloat(i)
 	return nil
@@ -277,7 +276,7 @@ func (m *mapper) setFloat64(v reflect.Value, value string) error {
 func (m *mapper) setBool(v reflect.Value, value string) error {
 	i, err := strconv.ParseBool(value)
 	if err != nil {
-		return pkg.wrapE("setBool", err)
+		return wrapE("setBool", err)
 	}
 	v.SetBool(i)
 	return nil
@@ -291,7 +290,7 @@ func (m *mapper) setSlice(v reflect.Value, value string) error {
 		elem := slice.Index(i)
 		err := m.setFieldValue(elem, t)
 		if err != nil {
-			return pkg.wrapE("setSlice", err)
+			return wrapE("setSlice", err)
 		}
 	}
 	v.Set(slice)
@@ -302,12 +301,12 @@ func (m *mapper) setSlice(v reflect.Value, value string) error {
 func (m *mapper) setArray(v reflect.Value, value string) error {
 	tags := strings.Split(value, ",")
 	if len(tags) > v.Cap() {
-		return pkg.newE("array out of range, max: %d", v.Cap())
+		return newE("array out of range, max: %d", v.Cap())
 	}
 	for i, t := range tags {
 		err := m.setFieldValue(v.Index(i), t)
 		if err != nil {
-			return pkg.wrapE("setArray", err)
+			return wrapE("setArray", err)
 		}
 	}
 	return nil

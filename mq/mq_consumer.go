@@ -7,6 +7,11 @@ import (
 	"time"
 )
 
+type RabbitMqConsumer interface {
+	Start()
+	Stop()
+}
+
 // ErrShouldDrop 如果接收到的消息 consumer 无法处理，希望从队列中删除，
 // 需要返回这个错误
 var ErrShouldDrop = errors.New("unprocessed message")
@@ -29,7 +34,7 @@ type Consumer struct {
 }
 
 // NewConsumer 创建一个 MQConsumer 实例
-func NewConsumer(ctx context.Context, worker ConsumerWorker, config *Config) *Consumer {
+func NewConsumer(ctx context.Context, worker ConsumerWorker, config *Config) RabbitMqConsumer {
 	c := &Consumer{
 		mq:     newMq(config),
 		ctx:    ctx,

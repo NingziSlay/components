@@ -6,8 +6,8 @@ import (
 	"github.com/olivere/elastic/v7"
 )
 
-// ESDoc es doc 对象
-type ESDoc interface {
+// Doc es doc 对象
+type Doc interface {
 	Index() string
 	ID() string
 }
@@ -41,7 +41,7 @@ func (es *ES) Client() *elastic.Client {
 }
 
 // BulkProcess start a bulk process
-func (es *ES) BulkProcess(ctx context.Context, ch <-chan ESDoc, batch, worker int) (err error) {
+func (es *ES) BulkProcess(ctx context.Context, ch <-chan Doc, batch, worker int) (err error) {
 	processor, err := es.client.BulkProcessor().BulkActions(batch).Workers(worker).Do(ctx)
 	if err != nil {
 		return
