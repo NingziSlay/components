@@ -84,3 +84,8 @@ func (db *DB) QueryMore(sql string, args ...interface{}) (*sql.Rows, error) {
 func (db *DB) ScanRows(rows *sql.Rows, dest interface{}) error {
 	return db.driver.ScanRows(rows, dest)
 }
+
+// Exec 执行 insert、update、delete 等操作
+func (db *DB) Exec(sql string, args ...interface{}) error {
+	return db.driver.Exec(sql, args...).Error
+}

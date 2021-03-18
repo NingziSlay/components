@@ -34,6 +34,7 @@ func TestDB_QueryOne(t *testing.T) {
 		assert.Equal(t, int64(1), u.ID)
 		assert.Equal(t, "TEST", u.Name)
 	}
+	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
 func TestDB_QueryMore(t *testing.T) {
@@ -61,4 +62,23 @@ func TestDB_QueryMore(t *testing.T) {
 			index++
 		}
 	}
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestDB_Exec(t *testing.T) {
+	db, mock := setup()
+	sql := "UPDATE test SET name = ? WHERE id = ?;"
+	mock.ExpectExec(regexp.QuoteMeta(sql)).WithArgs("test", 1).WillReturnResult(sqlmock.NewResult(1, 1))
+	assert.NoError(t, db.Exec(sql, "test", 1))
+	assert.NoError(t, mock.ExpectationsWereMet())
+
+	sql = "INSERT INTO test(name, age) values(?, ?);"
+	mock.ExpectExec(regexp.QuoteMeta(sql)).WithArgs("test", 1).WillReturnResult(sqlmock.NewResult(1, 1))
+	assert.NoError(t, db.Exec(sql, "test", 1))
+	assert.NoError(t, mock.ExpectationsWereMet())
+
+	sql = "INSERT INTO test(name, age) values(?, ?), (?, ?);"
+	mock.ExpectExec(regexp.QuoteMeta(sql)).WithArgs("test", 1, "test2", 2).WillReturnResult(sqlmock.NewResult(1, 1))
+	assert.NoError(t, db.Exec(sql, "test", 1, "test2", 2))
+	assert.NoError(t, mock.ExpectationsWereMet())
 }
