@@ -8,6 +8,7 @@ import (
 type RabbitMqProducer interface {
 	Destroy()
 	Publish(interface{}) error
+	PurgeQueue() error
 }
 
 type Producer struct {
@@ -46,4 +47,11 @@ func (producer *Producer) Publish(msg interface{}) (err error) {
 			Body:         body,
 		},
 	)
+}
+
+// PurgeQueue will purge all undelivered message of queue which
+// declare in Config struct
+func (producer *Producer) PurgeQueue() error {
+	_, err := producer.channel.QueuePurge(producer.config.Queue, true)
+	return err
 }
